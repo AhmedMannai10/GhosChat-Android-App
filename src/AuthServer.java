@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,12 +11,6 @@ import entity.User;
 import static java.lang.System.exit;
 
 public class AuthServer {
-    ArrayList<User> users = new ArrayList<User>(
-            Arrays.asList(
-                new User("Ahmed", "ahmedmannai@gmail.com", "ahmed"),
-                new User("Khaled", "khaledbna@gmail.com", "khaled")
-            )
-    );
 
     ArrayList<ObjectOutputStream> clientOutPutStreams;
 
@@ -93,32 +89,49 @@ public class AuthServer {
         public void sendAuthResponse(User user) throws InterruptedException {
             // login
             System.out.println(user);
-            // TODO connect to database
+
+
+            Connection conn = DataBaseHelper.connect(UserTable.NAME);
+
             if(user.getName().equals("LOGIN")){
                 // send True or False for logging
-                boolean isValid =  users.contains(user);
+                User dbUser = DataBaseHelper.getUserFromEmail(conn, user.email);
+                System.out.println(dbUser);
+                if(dbUser == null){
+                    writer.println("false");
+                    return;
+                }
+
+                boolean isValid =  dbUser.equals(user);
                 if(isValid){
-                    writer.println("TRUE");
+                    writer.println("True");
                     writer.flush();
                     System.out.print(isValid);
                     // The server auth server should shut down after login
                     exit(1);
                 }else{
-                    writer.println("FALSE");
+                    writer.println("False");
                     writer.flush();
                     System.out.print(isValid);
                 }
-//                writer.println("");
             }else{
                 // Sign Up
                 // TODO insert to database
-                users.add(user);
-                writer.println("TRUE");
+
+                Boolean result = DataBaseHelper.insert(conn, user);
+//                users.add(user);
+                if(result){
+                    // insert successfully
+                    writer.println("True");
+                    System.out.println("adding user to data base");
+                }else{
+                  // There is already another user with these details
+                    writer.println("false");
+                }
                 writer.flush();
-                System.out.println("adding user to data base");
                 exit(2);
             }
-    }
+        }
     }
 
 }
