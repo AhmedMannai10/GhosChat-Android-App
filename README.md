@@ -1,7 +1,7 @@
 # GhosChat Android App and Server
 
 ## Description
-GhosChat is a simple Android app that allows users to create accounts, log in, and engage in chat room conversations. The app communicates with a Java server, leveraging Java Socket for authentication and chat functionality. The server relies on MySQL as the database backend.
+GhosChat is a Android app that allows users to create accounts, log in, and engage in chat room conversations. The app communicates with a Java server, leveraging Java Socket for authentication and chat functionality. The server relies on MySQL as the database backend.
 
 ## Key Features
 - **Public Chat:** Engage in lively conversations with other users in a public chat room.
